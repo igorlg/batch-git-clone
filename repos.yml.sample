@@ -1,0 +1,15 @@
+#####  --THIS IS A SAMPLE FILE--  #####
+
+# Repository definition sample file. Configure here the folder structure you want for your git repos. Example:
+# I want repo "bla-bla-bla.git" of my company on folder acme/project1/bla-bla-bla, cloned as SSH, and repo
+# "zag-zag.git" on folder acme/project2/zag-zag, cloned as HTTPS:
+acme:
+  project1:
+    bla-bla-bla: 'git@github.com:acme/bla-bla-bla.git'
+  project2:
+    zag-zag: 'https://<my_user>:<my_password>@github.com/acme/zag-zag.git'
+
+# Maybe is a good idea to separate work and personal repos:
+personal:
+  final-project-math: 'git@github.com:myself/final-project-math.git'
+
