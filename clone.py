@@ -2,8 +2,7 @@ import yaml, subprocess, os
 
 def git_clone(name, path):
 	if not os.path.exists(path):
-		print "Cloning %s into %s" % (name, path)
-		subprocess.call(["git", "clone", v, path])
+		subprocess.call(["git", "clone", name, path])
 		print "Done!"
 
 def recursive_walk(d, depth=0, parent=[]):
