@@ -19,7 +19,7 @@ I hope to keep improving it. My task list is, so far:
   - [ ] Config File
   - [ ] Git Key Location and/or User/Pass
 - [ ] Function to manage the YAML from the command line (CRUD the config)
-- [ ] Clone repositories in **parallel**
+- [X] Clone repositories in **parallel**
 - [ ] Error handling
 - [ ] Package as PyPy
 - [ ] Use a Git library (such as GitPython) instead of the CLI
