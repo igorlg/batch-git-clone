@@ -21,22 +21,22 @@ def filter_output(line):
   ):
     print line.strip()
 
-def success(path, run):
+def success(path, name, run):
   for l in run.stdout: filter_output(l)
-  print "Done pulling " + path
+  print "Done cloning repo %s into %s" % (name, path)
 
 def failure(path, run):
   for l in run.stderr: filter_output(l)
-  print "Failed to pull " + path
+  print "Failed to clone %s" % path
 
 def git_clone(name, path):
-  print "Cloning " + name + " into " + path
-  clone = git(['clone', name, path])
+  print "Cloning %s into %s" % (name, path)
+  cmd = git(['clone', name, path])
 
-  if pull.returncode == 0:
-    success(path, pull)
+  if cmd.returncode == 0:
+    success(path, name, cmd)
   else:
-    failure(path, pull)
+    failure(path, name, cmd)
 
 def recursive_walk(d, depth=0, parent=[]):
   for k, v in sorted(d.items(), key=lambda x: x[0]):
