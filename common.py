@@ -1,6 +1,7 @@
 from termcolor import colored
 from subprocess import Popen, PIPE
 from multiprocessing import cpu_count
+import re
 
 def get_cpu_count():
   return cpu_count()
@@ -16,7 +17,13 @@ def git(commands, path=None):
               stderr=PIPE,
               cwd=path)
   run.wait()
-  return run
+
+  err = [l.strip() for l in run.stderr]
+  if run.returncode == 0:
+    out = [l.strip() for l in run.stdout]
+  else:
+    out = []
+  return out, err, run.returncode
 
 def pprint(text, index):
   colors = [ 'white', 'blue', 'yellow', 'green']
@@ -32,25 +39,15 @@ def filter_output(line):
     return line.strip()
 
 def git_branch_name(path):
-  cmd = git(['rev-parse', '--abbrev-ref', 'HEAD'], path)
+  out, err, ret = git(['rev-parse', '--abbrev-ref', 'HEAD'], path)
+  return out
 
-  if cmd.returncode == 0:
-    lines = [l.strip() for l in cmd.stdout]
-    return lines[0]
-  else:
-    return 'master'
-
-def git_remote_branches(path):
-  cmd = git(['branch', '-l', '-r'], path)
-
-  if cmd.returncode == 0:
-    return [l.strip() for l in cmd.stdout]
-  else:
-    return []
-
-def has_remote(branch, path):
-  remotes = git_remote_branches(path)
-  for l in remotes:
-    if branch in l:
-      return True
-  return False
+def git_remotes(path):
+  out, err, ret = git(['remote', '-v'], path)
+  if ret == 0:
+    for r in out:
+      try:
+        return re.search('^\w+\s+(.+)\s\(fetch\)$', r).group(1)
+      except AttributeError:
+        return None
+  return None

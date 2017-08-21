@@ -2,21 +2,21 @@ from common import *
 from joblib import Parallel, delayed
 import yaml, os
 
-def success(path, name, run):
-  for l in run.stdout: filter_output(l)
+def success(path, name, out):
+  for l in out: filter_output(l)
   print "Done cloning repo %s into %s" % (name, path)
 
-def failure(path, run):
+def failure(path):
   print colored("Failed to clone %s" % path, 'red')
 
 def git_clone(name, path):
   print "Cloning %s into %s" % (name, path)
-  cmd = git(['clone', name, path])
+  out, err, ret = git(['clone', name, path])
 
-  if cmd.returncode == 0:
-    success(path, name, cmd)
+  if ret == 0:
+    success(path, name, out)
   else:
-    failure(path, name, cmd)
+    failure(path)
 
 def recursive_walk(d, depth=0, parent=[]):
   for k, v in sorted(d.items(), key=lambda x: x[0]):
