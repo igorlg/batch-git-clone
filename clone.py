@@ -1,33 +1,13 @@
+from common import *
 from joblib import Parallel, delayed
-import multiprocessing
-import yaml, subprocess, os
-
-def git(commands, path=None):
-  try:
-    cmd = ['git'] + commands
-  except:
-    cmd = ['git'] + [commands]
-
-  run = subprocess.Popen(cmd,
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE,
-                         cwd=path)
-  run.wait()
-  return run
-
-def filter_output(line):
-  if (
-    not line.startswith('Warning: Permanently added')
-  ):
-    print line.strip()
+import yaml, os
 
 def success(path, name, run):
   for l in run.stdout: filter_output(l)
   print "Done cloning repo %s into %s" % (name, path)
 
 def failure(path, run):
-  for l in run.stderr: filter_output(l)
-  print "Failed to clone %s" % path
+  print colored("Failed to clone %s" % path, 'red')
 
 def git_clone(name, path):
   print "Cloning %s into %s" % (name, path)
@@ -47,11 +27,14 @@ def recursive_walk(d, depth=0, parent=[]):
       if not os.path.exists(path):
         git_repos[v] = path
 
-with open('_repos.yml', 'r') as f:
-  repos = yaml.load(f)
+def main():
+  with open('_repos.yml', 'r') as f:
+    repos = yaml.load(f)
 
-num_cores = multiprocessing.cpu_count()
+  num_cores = get_cpu_count()
+
+  recursive_walk(repos)
+  Parallel(n_jobs=num_cores)(delayed(git_clone)(r,p) for r,p in git_repos.iteritems())
+
 git_repos = {}
-
-recursive_walk(repos)
-Parallel(n_jobs=num_cores)(delayed(git_clone)(r,p) for r,p in git_repos.iteritems())
+main()
