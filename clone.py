@@ -31,10 +31,8 @@ def main():
   with open('_repos.yml', 'r') as f:
     repos = yaml.load(f)
 
-  num_cores = get_cpu_count()
-
   recursive_walk(repos)
-  Parallel(n_jobs=num_cores)(delayed(git_clone)(r,p) for r,p in git_repos.iteritems())
+  Parallel(n_jobs=get_cpu_count())(delayed(git_clone)(r,p) for r,p in git_repos.iteritems())
 
 git_repos = {}
 main()

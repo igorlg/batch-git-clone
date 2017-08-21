@@ -37,11 +37,8 @@ def main():
   with open('_repos.yml', 'r') as f:
     repos = yaml.load(f)
 
-  num_cores = get_cpu_count()
-  # paths     = []
-
   recursive_walk(repos)
-  Parallel(n_jobs=num_cores)(delayed(git_pull)(p,i) for i, p in enumerate(paths))
+  Parallel(n_jobs=get_cpu_count())(delayed(git_pull)(p,i) for i, p in enumerate(paths))
 
 paths = []
 main()
