@@ -1,6 +1,12 @@
 from joblib import Parallel, delayed
+from termcolor import colored
 import multiprocessing
 import yaml, subprocess, os
+
+def pprint(text, index):
+  colors = [ 'white', 'blue', 'yellow', 'green']
+  i = index % len(colors)
+  print colored(text, colors[i])
 
 def git(commands, path):
   try:
@@ -21,15 +27,15 @@ def filter_output(line):
     and not line.startswith('See git-pull(1) for details.') 
     and not line.startswith('git pull <remote> <branch>')
   ):
-    print line.strip()
+    return line.strip()
 
 def success(path, run):
-  for l in run.stdout: filter_output(l)
-  print "Done pulling %s" % path
+  out = [filter_output(l) for l in run.stdout]
+  out.append("Done pulling %s" % path)
+  return out
 
 def failure(path, run):
-  for l in run.stderr: filter_output(l)
-  print "Failed to pull %s" % path
+  print colored("Failed to pull %s" % path, 'red')
 
 def git_branch_name(path):
   cmd = git(['rev-parse', '--abbrev-ref', 'HEAD'], path)
@@ -55,17 +61,17 @@ def has_remote(branch, path):
       return True
   return False
 
-def git_pull(path):
+def git_pull(path, index):
   branch = git_branch_name(path)
   if not has_remote(branch, path):
-    print "Skipped path %s, branch %s for it doesn't have a remote" % (path, branch)
+    pprint(("Skipped path %s, branch %s for it doesn't have a remote" % (path, branch)), index)
     return None
 
-  print "Pulling %s on branch %s" % (path, branch)
+  pprint(("Pulling %s on branch %s" % (path, branch)), index)
   cmd = git('pull', path)
 
   if cmd.returncode == 0:
-    success(path, cmd)
+    pprint('\n'.join(success(path, cmd)), index)
   else:
     failure(path, cmd)
 
@@ -85,4 +91,4 @@ num_cores = multiprocessing.cpu_count()
 paths     = []
 
 recursive_walk(repos)
-Parallel(n_jobs=num_cores)(delayed(git_pull)(p) for p in paths)
+Parallel(n_jobs=num_cores)(delayed(git_pull)(p,i) for i, p in enumerate(paths))
