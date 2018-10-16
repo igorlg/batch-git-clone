@@ -28,7 +28,7 @@ def git(commands, path=None):
 def pprint(text, index):
   colors = [ 'white', 'blue', 'yellow', 'green']
   i = index % len(colors)
-  print colored(text, colors[i])
+  print(colored(text, colors[i]))
 
 def filter_output(line):
   if (

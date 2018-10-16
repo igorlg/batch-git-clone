@@ -4,14 +4,14 @@ import yaml, os
 
 def success(path, name, out):
   for l in out: filter_output(l)
-  print "Done cloning repo %s into %s" % (name, path)
+  print("Done cloning repo {} into {}".format(name, path))
 
 def failure(path):
-  print colored("Failed to clone %s" % path, 'red')
+  print(colored("Failed to clone {}".format(path), 'red'))
 
 def git_clone(name, path):
-  print "Cloning %s into %s" % (name, path)
-  out, err, ret = git(['clone', name, path])
+  print("Cloning {} into {}".format(name, path))
+  out, err, ret = git(['clone', name, path], path)
 
   if ret == 0:
     success(path, name, out)
@@ -32,7 +32,10 @@ def main():
     repos = yaml.load(f)
 
   recursive_walk(repos)
-  Parallel(n_jobs=get_cpu_count())(delayed(git_clone)(r,p) for r,p in git_repos.iteritems())
+  Parallel(n_jobs=get_cpu_count())(delayed(git_clone)(r,p) for r,p in git_repos.items())
+  #for r, p in git_repos.items():
+  #  print("r: {}".format(r))
+  #  print("p: {}".format(p))
 
 git_repos = {}
 main()
