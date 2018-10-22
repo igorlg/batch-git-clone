@@ -4,20 +4,20 @@ import yaml, os
 
 def success(path, out):
   out = [filter_output(l) for l in out]
-  out.append("Done fetching %s" % path)
+  out.append("Done fetching {}".format(path))
   return '\n'.join(out)
 
 def failure(path):
-  print colored("Failed to pull %s" % path, 'red')
+  print(colored("Failed to pull {}"(path), 'red'))
 
 def git_pull(path, index):
   remote = git_remotes(path)
 
   if remote is None:
-    pprint(("Skipping %s for it has no remotes" % path), index)
+    pprint(("Skipping {} for it has no remotes".format(path)), index)
     return
 
-  pprint(("Pulling %s from %s" % (path, remote)), index)
+  pprint(("Pulling {} from {}".format(path, remote)), index)
   out, err, ret = git('pull', path)
 
   if ret == 0:

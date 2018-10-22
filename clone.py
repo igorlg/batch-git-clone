@@ -4,13 +4,13 @@ import yaml, os
 
 def success(path, name, out):
   for l in out: filter_output(l)
-  print "Done cloning repo %s into %s" % (name, path)
+  print("Done cloning repo {} into {}".format(name, path))
 
 def failure(path):
-  print colored("Failed to clone %s" % path, 'red')
+  print(colored("Failed to clone {}".format(path), 'red'))
 
 def git_clone(name, path):
-  print "Cloning %s into %s" % (name, path)
+  print("Cloning {} into {}".format(name, path))
   out, err, ret = git(['clone', name, path])
 
   if ret == 0:
@@ -19,14 +19,14 @@ def git_clone(name, path):
     failure(path)
 
 def create_symlinks(links):
-  for t,l in links.iteritems():
+  for t,l in links.items():
     if os.path.exists(l): # Link already exists
       continue
     elif not os.path.exists(t): # Targer doesn't exist
-      print("Skipping link %s to %s as %s doesn't exists" % (l, t, t))
+      print("Skipping link {} to {} as {} doesn't exists".format(l, t, t))
       continue
 
-    print("Creating symlink %s to %s" % (l, t))
+    print("Creating symlink {} to {}".format(l, t))
     os.symlink(t, l)
 
 def recursive_walk(d, depth=0, parent=[]):
@@ -49,7 +49,7 @@ def main():
     repos = yaml.load(f)
 
   recursive_walk(repos)
-  Parallel(n_jobs=get_cpu_count())(delayed(git_clone)(r,p) for r,p in git_repos.iteritems())
+  Parallel(n_jobs=get_cpu_count())(delayed(git_clone)(r,p) for r,p in git_repos.items())
   create_symlinks(sym_links)
 
 git_repos = {}

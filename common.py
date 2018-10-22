@@ -28,12 +28,12 @@ def git(commands, path=None):
 def pprint(text, index):
   colors = [ 'white', 'blue', 'yellow', 'green']
   i = index % len(colors)
-  print colored(text, colors[i])
+  print(colored(text, colors[i]))
 
 def filter_output(line):
   if (
     not line.startswith('Warning: Permanently added')
-    and not line.startswith('See git-pull(1) for details.') 
+    and not line.startswith('See git-pull(1) for details.')
     and not line.startswith('git pull <remote> <branch>')
   ):
     return line.strip()
