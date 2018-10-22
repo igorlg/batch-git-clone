@@ -8,7 +8,7 @@ def success(path, out):
   return '\n'.join(out)
 
 def failure(path):
-  print(colored("Failed to pull {}"(path), 'red'))
+  print(colored("Failed to pull {}".format(path), 'red'))
 
 def git_pull(path, index):
   remote = git_remotes(path)

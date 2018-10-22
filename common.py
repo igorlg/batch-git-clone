@@ -47,7 +47,7 @@ def git_remotes(path):
   if ret == 0:
     for r in out:
       try:
-        return re.search('^\w+\s+(.+)\s\(fetch\)$', r).group(1)
+        return re.search('^\w+\s+(.+)\s\(fetch\)$', r.decode("utf-8")).group(1)
       except AttributeError:
         return None
   return None
