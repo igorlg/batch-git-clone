@@ -31,12 +31,17 @@ def pprint(text, index):
   print(colored(text, colors[i]))
 
 def filter_output(line):
-  if (
-    not line.startswith('Warning: Permanently added')
-    and not line.startswith('See git-pull(1) for details.')
-    and not line.startswith('git pull <remote> <branch>')
-  ):
-    return line.strip()
+  try:
+    if (
+      not line.startswith('Warning: Permanently added')
+      and not line.startswith('See git-pull(1) for details.')
+      and not line.startswith('git pull <remote> <branch>')
+    ):
+      return str(line.strip())
+    else:
+      return ''
+  except:
+    return str(line.strip())
 
 def git_branch_name(path):
   out, err, ret = git(['rev-parse', '--abbrev-ref', 'HEAD'], path)

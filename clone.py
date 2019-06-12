@@ -1,6 +1,6 @@
 from common import *
 from joblib import Parallel, delayed
-import yaml, os
+import yaml, os, pathlib
 
 def success(path, name, out):
   for l in out: filter_output(l)
@@ -19,30 +19,33 @@ def git_clone(name, path):
     failure(path)
 
 def create_symlinks(links):
-  for t,l in links.items():
-    if os.path.exists(l): # Link already exists
+  for s,link in links.items():
+    src = str(pathlib.Path(s).resolve())
+
+    if os.path.exists(link): # Link already exists
       continue
-    elif not os.path.exists(t): # Targer doesn't exist
-      print("Skipping link {} to {} as {} doesn't exists".format(l, t, t))
+    elif not os.path.exists(src): # Targer doesn't exist
+      print('Skipping link {} to {} as {} doesnt exists'.format(link, src, src))
       continue
 
-    print("Creating symlink {} to {}".format(l, t))
-    os.symlink(t, l)
+    pathlib.Path(link).parent.mkdir(parents=True, exist_ok=True)
+    print('Creating symlink {} to {}'.format(link, src))
+    os.symlink(src, link)
 
 def recursive_walk(d, depth=0, parent=[]):
   for k, v in sorted(d.items(), key=lambda x: x[0]):
     if isinstance(v, dict):
       recursive_walk(v, depth+1, parent + [k])
+      continue
+
+    path = "/".join(parent + [k])
+    if os.path.exists(path):
+      continue
+
+    if v.startswith('git@') or v.startswith('https://'):
+      git_repos[v] = path
     else:
-      path = "/".join(parent + [k])
-      try:
-        if v.startswith('symlink:'):
-          link = v.split(':')[1]
-          sym_links[link] = path
-        elif not os.path.exists(path):
-          git_repos[v] = path
-      except:
-        continue
+      sym_links[v] = path
 
 def main():
   with open('_repos.yml', 'r') as f:
