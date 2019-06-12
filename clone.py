@@ -11,7 +11,7 @@ def failure(path):
 
 def git_clone(name, path):
   print("Cloning {} into {}".format(name, path))
-  out, err, ret = git(['clone', name, path])
+  out, err, ret = git(['clone', name, path], path)
 
   if ret == 0:
     success(path, name, out)
