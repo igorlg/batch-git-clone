@@ -5,3 +5,10 @@
 env/
 **/*.pyc
 __pycache__
+
+# PyEnv
+.python-version
+
+# PyCharm
+.idea/
+
