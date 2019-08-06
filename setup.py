@@ -15,6 +15,14 @@ version = re.search(
 with open('README.md', 'rb') as f:
     long_descr = f.read().decode('utf-8')
 
+install_requires = ['joblib',
+                    'PyYAML',
+                    'termcolor',
+                    ]
+
+tests_requires = ['pytest',
+                  ]
+
 setup(
     name='gitbatch',
     packages=['gitbatch'],
@@ -22,6 +30,8 @@ setup(
         'console_scripts': ['gitbatch = gitbatch.gitbatch:main']
     },
     version=version,
+    install_requires=install_requires,
+    tests_require=tests_requires,
     description='Perform Batch Git operations based on Config file',
     long_description=long_descr,
     long_description_content_type='text/markdown',
