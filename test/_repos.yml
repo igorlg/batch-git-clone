@@ -1,0 +1,7 @@
+igor:
+  public:
+    aws-datapipeline-sync-s3: 'git@github.com:igorlg/aws-datapipeline-sync-s3.git'
+  batch-git-clone: 'git@github.com:igorlg/batch-git-clone.git'
+
+postgres: 'git@github.com:postgres/postgres.git'
+

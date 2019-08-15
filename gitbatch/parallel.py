@@ -1,7 +1,6 @@
 from multiprocessing import Process
 from multiprocessing import JoinableQueue
 from multiprocessing import Queue
-from multiprocessing import cpu_count
 
 
 class Consumer(Process):
@@ -11,7 +10,6 @@ class Consumer(Process):
         self.result_queue = result_queue
 
     def run(self):
-        # proc_name = self.name
         while True:
             next_task = self.task_queue.get()
 
@@ -27,12 +25,9 @@ class Consumer(Process):
 
 
 class ConsumerManager:
-    def __init__(self, num_consumers=None):
+    def __init__(self, num_consumers=1):
         self.tasks = JoinableQueue()
         self.results = Queue()
-
-        if num_consumers is None:
-            num_consumers = min(cpu_count() * 2, 10)
         self.consumers = [Consumer(self.tasks, self.results) for _ in range(num_consumers)]
 
     def start(self):

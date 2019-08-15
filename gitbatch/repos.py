@@ -1,6 +1,8 @@
 import os
 import yaml
 
+import subprocess
+
 
 class GitRepos:
     def __init__(self):
@@ -57,7 +59,7 @@ class GitRepos:
 
 class Repository:
     def __init__(self, local, remote=None, link=None):
-        self._local = local
+        self._local = os.path.realpath(local)
         self._remote = remote
         self._link = link
 
@@ -100,24 +102,59 @@ class Repository:
 
 
 class RepositoryTask:
-    def __init__(self, repo, action):
+    def __init__(self, repo, action, dry_run=False):
         self.repo = repo
         self.action = action
-        self.output = ''
+        self.dry_run = dry_run
+        self.output = None
         self.executed = False
+
+    def __str__(self):
+        leftlen = max([len(k)+2 for k in self.__dict__.keys()])
+
+        def line(k, v):
+            return '{}:'.format(k).ljust(leftlen) + str(v)
+        return '\n'.join([line(k, v) for k, v in self.__dict__.items()])
+
+    def _out(self, msg):
+        self.output += '\n' + str(msg)
+        return self
 
     def __call__(self, *args, **kwargs):
         if self.executed:
             self.output = 'Task already executed. Skipping'
-        elif self.action == 'clone':
-            self.output = 'Running CLONE on {}'.format(self.repo.local)
+            return self
+
+        self.executed = True
+
+        if self.action == 'clone':
+            r = self.repo
+            if r.local_exists:
+                self.output = 'Skipping clone of {} to {}. Path already exists'.format(r.remote, r.local)
+            else:
+                self.output = 'Running CLONE on {}'.format(r.local)
+
+                cmd = ['git', 'clone', r.remote, r.local]
+                try:
+                    result = subprocess.run(cmd, capture_output=True, check=True)
+                    self._out(result.stdout)
+                except subprocess.CalledProcessError as e:
+                    self._out(e.stdout)
+                    self._out(e.stderr)
+
         elif self.action == 'pull':
             self.output = 'Running PULL on {}'.format(self.repo.local)
+            self.output = 'NOT IMPLEMENTED YET'
+
         elif self.action == 'fetch':
             self.output = 'Running FETCH on {}'.format(self.repo.local)
+            self.output = 'NOT IMPLEMENTED YET'
+
         elif self.action == 'link':
             self.output = 'Running LINK on {}'.format(self.repo.local)
-        return self
+            self.output = 'NOT IMPLEMENTED YET'
 
-    def __str__(self):
-        return '{} on {}'.format(self.action, self.repo.local)
+        else:
+            raise Exception('RepositoryTask: action {} not supported'.format(self.action))
+
+        return self

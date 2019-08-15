@@ -3,6 +3,6 @@
 
 """distro.__main__: executed when distro directory is called as script."""
 
-from .gitbatch import main
+from .gitbatch import cli
 
-main()
+cli()

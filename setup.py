@@ -18,6 +18,7 @@ with open('README.md', 'rb') as f:
 install_requires = ['joblib',
                     'PyYAML',
                     'termcolor',
+                    'pyfiglet',
                     ]
 
 tests_requires = ['pytest',
@@ -27,7 +28,7 @@ setup(
     name='gitbatch',
     packages=['gitbatch'],
     entry_points={
-        'console_scripts': ['gitbatch = gitbatch.gitbatch:main']
+        'console_scripts': ['gitbatch = gitbatch.gitbatch:cli']
     },
     version=version,
     install_requires=install_requires,
