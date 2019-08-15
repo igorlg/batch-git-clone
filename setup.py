@@ -18,7 +18,7 @@ with open('README.md', 'rb') as f:
 install_requires = ['joblib',
                     'PyYAML',
                     'termcolor',
-                    'pyfiglet',
+                    'click',
                     ]
 
 tests_requires = ['pytest',
