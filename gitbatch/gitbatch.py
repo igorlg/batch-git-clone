@@ -10,10 +10,10 @@ import click
 
 from multiprocessing import cpu_count
 
-from gitbatch.repos import GitRepos
-from gitbatch.repos import RepositoryTask
-from gitbatch.parallel import ConsumerManager
 from gitbatch.config import Config
+from gitbatch.repos import GitRepos
+from gitbatch.parallel import ConsumerManager
+from gitbatch.tasks import RepositoryTask
 
 
 # from pyfiglet import Figlet
@@ -39,25 +39,32 @@ def repo_task(config):
               help='Level of Parallelism. 1 or 0 runs in series')
 @click.option('-d', '--dry-run', envvar='GITBATCH_DRY_RUN', default=False,
               help='Print actions instead of performing them')
+@click.option('-s', '--silent', envvar='GITBATCH_SILENT', default=False,
+              help='Supress outputs')
 @click.pass_context
-def cli(ctx, repos_file, parallel, dry_run):
+def cli(ctx, repos_file, parallel, dry_run, silent):
     """Main execution wrapper. Parsers CLI arguments, loads data, calls the search method and displays the results"""
 
     ctx.obj = Config(repos_file=repos_file,
                      parallel=parallel,
                      dry_run=dry_run,
+                     silent=silent,
                      )
 
 
 @cli.command()
 @click.pass_obj
 def clone(config):
-    """Git CLONE and SymLink on all repositories defined in the Repos file"""
+    """Git CLONE on all repositories defined in the Repos file"""
 
     repos, worker = repo_task(config)
-    worker.add([RepositoryTask(r, 'clone') for r in repos.repos])
-    worker.add([RepositoryTask(r, 'link') for r in repos.repos])
-    results = worker.done_adding().wait()
+    results = worker\
+        .add([RepositoryTask(repo=r, action='clone', silent=config.silent) for r in repos.repos])\
+        .done_adding()\
+        .wait()
+
+    # Create SymLinks after all Clone jobs have completed...
+    results = results + [RepositoryTask(repo=r, action='link', silent=config.silent)() for r in repos.links]
 
     for r in results:
         click.echo(r)
@@ -69,8 +76,10 @@ def pull(config):
     """Run Git PULL on all repositories"""
 
     repos, worker = repo_task(config)
-    worker.add([RepositoryTask(r, 'pull') for r in repos.repos])
-    results = worker.done_adding().wait()
+    results = worker\
+        .add([RepositoryTask(repo=r, action='pull', silent=config.silent) for r in repos.repos])\
+        .done_adding()\
+        .wait()
 
     for r in results:
         click.echo(r)
@@ -82,8 +91,10 @@ def fetch(config):
     """Run Git FETCH on all repositories"""
 
     repos, worker = repo_task(config)
-    worker.add([RepositoryTask(r, 'fetch') for r in repos.repos])
-    results = worker.done_adding().wait()
+    results = worker\
+        .add([RepositoryTask(repo=r, action='fetch', silent=config.silent) for r in repos.repos])\
+        .done_adding()\
+        .wait()
 
     for r in results:
         click.echo(r)
@@ -91,10 +102,10 @@ def fetch(config):
 
 @cli.command()
 @click.pass_obj
-def check(_):
+def doctor(_):
     """Check if repos defined exist locally"""
 
-    click.echo('check: NOT IMPLEMENTED YET')
+    click.echo('doctor: NOT IMPLEMENTED YET')
     click.echo('')
     exit(1)
 

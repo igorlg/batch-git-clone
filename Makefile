@@ -8,9 +8,11 @@ clean:
 	rm -rvf dist/
 	rm -rvf gitbatch.egg-info
 	rm -rvf .pytest_cache
+	rm -rvf __pycache__
 	rm -rvf MANIFEST.in
 	rm -rvf git-batch/__pycache__ distro/*.pyc
 	rm -rvf test/__pycache__ test/*.pyc
+	rm -rf test/repos
 
 .PHONY: test
 test:

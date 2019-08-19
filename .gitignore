@@ -18,3 +18,7 @@ dist/
 # General
 **/.DS_*
 tmp/
+
+# Tests
+test/repos/
+test.py

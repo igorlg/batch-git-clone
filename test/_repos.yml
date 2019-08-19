@@ -1,7 +1,9 @@
-igor:
-  public:
-    aws-datapipeline-sync-s3: 'git@github.com:igorlg/aws-datapipeline-sync-s3.git'
-  batch-git-clone: 'git@github.com:igorlg/batch-git-clone.git'
+test:
+  repos:
+    igor:
+      public:
+        aws-datapipeline-sync-s3: 'git@github.com:igorlg/aws-datapipeline-sync-s3.git'
+      batch-git-clone: 'git@github.com:igorlg/batch-git-clone.git'
 
-postgres: 'git@github.com:postgres/postgres.git'
-
+    json2hcl: 'git@github.com:igorlg/json2hcl.git'
+    bgc: '/Users/igor/Github/igor/public/batch-git-clone/test/repos/igor/batch-git-clone'

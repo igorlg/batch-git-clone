@@ -11,16 +11,18 @@ class Consumer(Process):
 
     def run(self):
         while True:
-            next_task = self.task_queue.get()
+            task = self.task_queue.get()
 
             # Poison pill means shutdown
-            if next_task is None:
+            if task is None:
                 self.task_queue.task_done()
                 break
 
-            answer = next_task()
-            self.task_queue.task_done()
-            self.result_queue.put(answer)
+            try:
+                answer = task()
+                self.result_queue.put(answer)
+            finally:
+                self.task_queue.task_done()
         return
 
 
@@ -39,12 +41,14 @@ class ConsumerManager:
         if not isinstance(tasks, list):
             tasks = [tasks]
         for task in tasks:
+            print('Adding Task: {}'.format(str(task)))
             self.tasks.put(task)
         return self
 
     def done_adding(self):
         for i in range(len(self.consumers)):
             self.tasks.put(None)
+            print('Added poison pill #{} to Consumer'.format(i+1))
         return self
 
     def wait(self):
