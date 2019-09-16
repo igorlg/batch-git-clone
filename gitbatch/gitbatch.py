@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-"""distro.distro: provides entry point main()."""
+"""gitbatch.gitbatch: provides entry point main()."""
 
 __version__ = '0.0.1'
 
