@@ -1,5 +1,6 @@
 import os
 import yaml
+from pathlib import Path
 
 
 class GitRepos:
@@ -85,9 +86,10 @@ class Repository:
     def link(self):
         return self._link
 
-    # @property
-    # def parent(self):
-    #     return os.path.realpath(os.path.join(self.local, os.pardir))
+    @property
+    def parent(self):
+        # return os.path.realpath(os.path.join(self.local, os.pardir))
+        return str(Path(self.local).parent)
 
     @property
     def is_link(self):
@@ -104,3 +106,7 @@ class Repository:
     @property
     def link_exists(self):
         return os.path.isdir(self.link)
+
+    @property
+    def parent_exists(self):
+        return os.path.isdir(self.parent)

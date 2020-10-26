@@ -1,5 +1,6 @@
 import os
 import subprocess
+from pathlib import Path
 
 
 class RepositoryTask:
@@ -92,6 +93,7 @@ class RepositoryTask:
 
         self._out('Running LINK of {} to {}'.format(r.local, r.link))
         try:
+            Path(r.parent).mkdir(parents=True, exist_ok=True)
             os.symlink(r.link, r.local, target_is_directory=True)
             self._out('Created link {} to {}'.format(r.local, r.link))
         except FileNotFoundError:

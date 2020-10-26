@@ -3,7 +3,7 @@
 
 """gitbatch.gitbatch: provides entry point main()."""
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 import os
 import click

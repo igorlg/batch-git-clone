@@ -14,6 +14,15 @@ clean:
 	rm -rvf test/__pycache__ test/*.pyc
 	rm -rf test/repos
 
+SHELL := /bin/bash
+PYTHON=/usr/bin/python3
+.PHONY: env
+env:
+	rm -rfv venv/ | grep -E "removed directory '[^/]*/?[^/]*'" ;\
+	virtualenv -p $(PYTHON) venv ;\
+	source venv/bin/activate ;\
+	pip install -r requirements.txt
+
 .PHONY: test
 test:
 	@echo "Running tests..."
